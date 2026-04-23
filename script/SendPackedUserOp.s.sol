@@ -22,6 +22,20 @@ contract SendPackedUserOp is Script {
     ) public view returns (PackedUserOperation memory) {
         uint256 nonce = vm.getNonce(minimalAccount);
         PackedUserOperation memory userOp = _generateUnsignedUserOperation(callData, minimalAccount, nonce);
+
+        bytes32 userOpHash = IEntryPoint(config.entryPoint).getUserOpHash(userOp);
+        bytes32 digest = userOpHash.toEthSignedMessageHash();
+
+        uint8 v;
+        bytes32 r;
+        bytes32 s;
+        if (block.chainid == 31337) {
+            (v, r, s) = vm.sign(ANVIL_DEFAULT_KEY, digest);
+        } else {
+            (v, r, s) = vm.sign(config.account, digest);
+        }
+        userOp.signature = abi.encodePacked(r, s, v);
+        return userOp;
     }
 
     function _generateUnsignedUserOperation(bytes memory callData, address sender, uint256 nonce)
