@@ -36,4 +36,22 @@ contract SmartWallet is IAccount, Ownable {
     constructor(IEntryPoint _entryPoint) Ownable(msg.sender) {
         i_entryPoint = _entryPoint;
     }
+
+    /* Functions */
+    function validateUserOp(PackedUserOperation calldata userOp, bytes32 userOpHash, uint256 missingAccountFunds)
+        external
+        requireFromEntryPoint
+        returns (uint256 validationData)
+    {
+        validationData = _validateSignature(userOp, userOpHash);
+        _payPrefund(missingAccountFunds);
+    }
+
+    function _validateSignature(PackedUserOperation calldata userOp, bytes32 userOpHash)
+        internal
+        view
+        returns (uint256 validationData)
+    {}
+
+    function _payPrefund(uint256 missingAccountFunds) internal {}
 }
