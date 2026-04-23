@@ -31,4 +31,9 @@ contract SmartWallet is IAccount, Ownable {
             _;
         }
     }
+
+    /* Constructor */
+    constructor(IEntryPoint _entryPoint) Ownable(msg.sender) {
+        i_entryPoint = _entryPoint;
+    }
 }
