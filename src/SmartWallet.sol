@@ -51,7 +51,16 @@ contract SmartWallet is IAccount, Ownable {
         internal
         view
         returns (uint256 validationData)
-    {}
+    {
+        bytes32 ethSignedMessageHash = MessageHashUtils.toEthSignedMessageHash(userOpHash);
+        address signer = ECDSA.recover(ethSignedMessageHash, userOp.signature);
+
+        if (signer != owner()) {
+            return SIG_VALIDATION_FAILED;
+        } else {
+            return SIG_VALIDATION_SUCCESS;
+        }
+    }
 
     function _payPrefund(uint256 missingAccountFunds) internal {}
 }
