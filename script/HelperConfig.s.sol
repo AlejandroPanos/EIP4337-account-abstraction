@@ -17,4 +17,18 @@ contract HelperConfig is Script {
     address public constant ANVIL_ADDRESS = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
 
     NetworkConfig public activeNetworkConfig;
+
+    /* Constructor */
+    constructor() {
+        if (block.chainid == SEPOLIA_ID) {
+            return getSepoliaConfig();
+        } else {
+            return getOrCreateAnvilConfig();
+        }
+    }
+
+    /* Functions */
+    function getSepoliaConfig() public returns (NetworkConfig memory) {}
+
+    function getOrCreateAnvilConfig() public returns (NetworkConfig memory) {}
 }
