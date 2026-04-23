@@ -22,15 +22,15 @@ contract SmartWallet is IAccount, Ownable {
     modifier requireFromEntryPoint() {
         if (msg.sender != address(i_entryPoint)) {
             revert SmartWallet__NotFromEntryPoint();
-            _;
         }
+        _;
     }
 
     modifier requireFromEntryPointOrOwner() {
         if (msg.sender != address(i_entryPoint) && msg.sender != owner()) {
             revert SmartWallet__NotFromEntryPointOrOwner();
-            _;
         }
+        _;
     }
 
     /* Constructor */
