@@ -9,4 +9,26 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {SIG_VALIDATION_FAILED, SIG_VALIDATION_SUCCESS} from "lib/account-abstraction/contracts/core/Helpers.sol";
 import {IEntryPoint} from "lib/account-abstraction/contracts/interfaces/IEntryPoint.sol";
 
-contract SmartWallet is IAccount, Ownable {}
+contract SmartWallet is IAccount, Ownable {
+    /* Errors */
+    error SmartWallet__NotFromEntryPoint();
+    error SmartWallet__NotFromEntryPointOrOwner();
+
+    /* State variables */
+    IEntryPoint private immutable i_entryPoint;
+
+    /* Modifiers */
+    modifier requireFromEntryPoint() {
+        if (msg.sender != address(i_entryPoint)) {
+            revert SmartWallet__NotFromEntryPoint();
+            _;
+        }
+    }
+
+    modifier requireFromEntryPointOrOwner() {
+        if (msg.sender != address(i_entryPoint) && msg.sender != owner()) {
+            revert SmartWallet__NotFromEntryPointOrOwner();
+            _;
+        }
+    }
+}
