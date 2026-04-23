@@ -37,14 +37,14 @@ contract HelperConfig is Script {
 
     function getOrCreateAnvilConfig() public returns (NetworkConfig memory) {
         if (activeNetworkConfig.entryPoint != address(0)) {
-            return localNetworkConfig;
+            return activeNetworkConfig;
         }
 
         vm.startBroadcast();
         EntryPoint entryPoint = new EntryPoint();
         vm.stopBroadcast();
 
-        activeNetworkConfig = NetworkConfig({entryPoint: address(entryPoint), account: BURNER});
+        activeNetworkConfig = NetworkConfig({entryPoint: address(entryPoint), account: ANVIL_ADDRESS});
 
         return activeNetworkConfig;
     }
