@@ -2,8 +2,9 @@
 pragma solidity ^0.8.19;
 
 import {Script} from "forge-std/Script.sol";
-import {HelperConfig} from "script/Helperconfig.s.sol";
+import {HelperConfig} from "script/HelperConfig.s.sol";
 import {SmartWallet} from "src/SmartWallet.sol";
+import {IEntryPoint} from "lib/account-abstraction/contracts/interfaces/IEntryPoint.sol";
 
 contract DeploySmartWallet is Script {
     /* Instantiate contracts */
@@ -11,19 +12,16 @@ contract DeploySmartWallet is Script {
     SmartWallet smartWallet;
 
     /* State variables */
-    HelperConfig.NetworkConfig private config;
     address entryPoint;
     address account;
 
     /* Run function */
     function run() external returns (HelperConfig, SmartWallet) {
         helperConfig = new HelperConfig();
-        config = helperConfig.activeNetworkConfig();
-        entryPoint = config.entryPoint;
-        account = config.account;
+        (entryPoint, account) = helperConfig.activeNetworkConfig();
 
         vm.startBroadcast();
-        smartWallet = new SmartWallet(entryPoint);
+        smartWallet = new SmartWallet(IEntryPoint(entryPoint));
         smartWallet.transferOwnership(account);
         vm.stopBroadcast();
 

@@ -38,6 +38,7 @@ contract SmartWallet is IAccount, Ownable {
         i_entryPoint = _entryPoint;
     }
 
+    receive() external payable {}
     fallback() external payable {}
 
     /* Functions */
@@ -51,7 +52,7 @@ contract SmartWallet is IAccount, Ownable {
     }
 
     function execute(address dest, uint256 value, bytes calldata functionData) external requireFromEntryPointOrOwner {
-        (bool success, bytes memory functionData) = dest.call{value: value}(functionData);
+        (bool success, bytes memory data) = dest.call{value: value}(functionData);
         if (!success) {
             revert SmartWallet__ETHTransferFailed();
         }
