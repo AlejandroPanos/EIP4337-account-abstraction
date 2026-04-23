@@ -62,5 +62,10 @@ contract SmartWallet is IAccount, Ownable {
         }
     }
 
-    function _payPrefund(uint256 missingAccountFunds) internal {}
+    function _payPrefund(uint256 missingAccountFunds) internal {
+        if (missingAccountFunds != 0) {
+            (bool success,) = payable(msg.sender).call{value: missingAccountFunds, gas: type(uint256).max}("");
+            (success);
+        }
+    }
 }
