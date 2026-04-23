@@ -22,15 +22,15 @@ contract HelperConfig is Script {
     /* Constructor */
     constructor() {
         if (block.chainid == SEPOLIA_ID) {
-            return getSepoliaConfig();
+            activeNetworkConfig = getSepoliaConfig();
         } else {
-            return getOrCreateAnvilConfig();
+            activeNetworkConfig = getOrCreateAnvilConfig();
         }
     }
 
     /* Functions */
-    function getSepoliaConfig() public returns (NetworkConfig memory) {
-        NetworkConfig memory config = NetworkConfig({entryPoint: SEPOLIA_ENTRY_POINT, sender: BURNER});
+    function getSepoliaConfig() public pure returns (NetworkConfig memory) {
+        NetworkConfig memory config = NetworkConfig({entryPoint: SEPOLIA_ENTRY_POINT, account: BURNER});
 
         return config;
     }
@@ -44,8 +44,8 @@ contract HelperConfig is Script {
         EntryPoint entryPoint = new EntryPoint();
         vm.stopBroadcast();
 
-        localNetworkConfig = NetworkConfig({entryPoint: entryPoint, account: BURNER});
+        activeNetworkConfig = NetworkConfig({entryPoint: address(entryPoint), account: BURNER});
 
-        return localNetworkConfig;
+        return activeNetworkConfig;
     }
 }
