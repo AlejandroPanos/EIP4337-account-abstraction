@@ -13,6 +13,7 @@ contract SmartWallet is IAccount, Ownable {
     /* Errors */
     error SmartWallet__NotFromEntryPoint();
     error SmartWallet__NotFromEntryPointOrOwner();
+    error SmartWallet__ETHTransferFailed();
 
     /* State variables */
     IEntryPoint private immutable i_entryPoint;
@@ -45,6 +46,13 @@ contract SmartWallet is IAccount, Ownable {
     {
         validationData = _validateSignature(userOp, userOpHash);
         _payPrefund(missingAccountFunds);
+    }
+
+    function execute(address dest, uint256 value, bytes calldata functionData) external requireFromEntryPointOrOwner {
+        (bool success, bytes memory functionData) = dest.call{value: value}(functionData);
+        if (!success) {
+            revert SmartWallet__ETHTransferFailed();
+        }
     }
 
     function _validateSignature(PackedUserOperation calldata userOp, bytes32 userOpHash)
