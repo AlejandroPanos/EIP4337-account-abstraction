@@ -38,6 +38,8 @@ contract SmartWallet is IAccount, Ownable {
         i_entryPoint = _entryPoint;
     }
 
+    fallback() external payable {}
+
     /* Functions */
     function validateUserOp(PackedUserOperation calldata userOp, bytes32 userOpHash, uint256 missingAccountFunds)
         external
