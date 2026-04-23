@@ -52,7 +52,7 @@ contract SmartWallet is IAccount, Ownable {
     }
 
     function execute(address dest, uint256 value, bytes calldata functionData) external requireFromEntryPointOrOwner {
-        (bool success, ) = dest.call{value: value}(functionData);
+        (bool success,) = dest.call{value: value}(functionData);
         if (!success) {
             revert SmartWallet__ExecutionFailed();
         }
