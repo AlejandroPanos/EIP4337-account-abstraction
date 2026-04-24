@@ -79,4 +79,9 @@ contract SmartWallet is IAccount, Ownable {
             (success);
         }
     }
+
+    /* Getter functions */
+    function getEntryPoint() external view returns (address) {
+        return address(i_entryPoint);
+    }
 }
