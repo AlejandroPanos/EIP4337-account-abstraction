@@ -74,4 +74,9 @@ contract SmartWalletTest is Test {
 
         assertEq(usdc.balanceOf(address(smartWallet)), AMOUNT);
     }
+
+    function testWalletCanReceive() public {
+        vm.deal(address(smartWallet), 1 ether);
+        assertEq(address(smartWallet).balance, 1 ether);
+    }
 }
