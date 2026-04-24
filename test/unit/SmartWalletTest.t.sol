@@ -96,4 +96,13 @@ contract SmartWalletTest is Test {
         uint256 validationData = smartWallet.validateUserOp(packedUserOp, userOperationHash, missingAccountFunds);
         assertEq(validationData, 0);
     }
+
+    function testValidateUserOpRevertsIfCallerIsNotEntryPoint() public {
+        PackedUserOperation memory emptyOp;
+        bytes32 emptyHash;
+
+        vm.prank(user);
+        vm.expectRevert(SmartWallet.SmartWallet__NotFromEntryPoint.selector);
+        smartWallet.validateUserOp(emptyOp, emptyHash, 0);
+    }
 }
