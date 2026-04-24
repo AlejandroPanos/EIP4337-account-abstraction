@@ -31,4 +31,16 @@ contract SmartWalletTest is Test {
         usdc = new ERC20Mock();
         sendPackedUserOp = new SendPackedUserOp();
     }
+
+    /* Testing functions */
+    function testOwnerCanExecute() public {
+        address dest = address(usdc);
+        uint256 value = 0;
+        bytes memory functionData = abi.encodeWithSelector(ERC20Mock.mint.selector, address(smartWallet), AMOUNT);
+
+        vm.prank(smartWallet.owner());
+        smartWallet.execute(dest, value, functionData);
+
+        assertEq(usdc.balanceOf(address(smartWallet)), AMOUNT);
+    }
 }
