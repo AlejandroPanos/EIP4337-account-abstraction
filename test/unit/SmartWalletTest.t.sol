@@ -10,4 +10,13 @@ import {SendPackedUserOp, PackedUserOperation, IEntryPoint} from "script/SendPac
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
-contract SmartWalletTest is Test {}
+contract SmartWalletTest is Test {
+    /* Library usage */
+    using MessageHashUtils for bytes32;
+
+    /* Instantiate contracts */
+    HelperConfig helperConfig;
+    SmartWallet smartWallet;
+    ERC20Mock usdc;
+    SendPackedUserOp sendPackedUserOp;
+}
