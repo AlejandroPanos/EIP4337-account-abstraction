@@ -15,13 +15,13 @@ contract SendPackedUserOp is Script {
     uint256 private constant ANVIL_KEY = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
 
     /* Functions */
-    function generateUserOperation(
-        bytes memory callData,
-        HelperConfig.NetworkConfig memory config,
-        address minimalAccount
-    ) public view returns (PackedUserOperation memory) {
-        uint256 nonce = vm.getNonce(minimalAccount);
-        PackedUserOperation memory userOp = _generateUnsignedUserOperation(callData, minimalAccount, nonce);
+    function generateUserOperation(bytes memory callData, HelperConfig.NetworkConfig memory config, address smartWallet)
+        public
+        view
+        returns (PackedUserOperation memory)
+    {
+        uint256 nonce = IEntryPoint(config.entryPoint).getNonce(smartWallet, 0);
+        PackedUserOperation memory userOp = _generateUnsignedUserOperation(callData, smartWallet, nonce);
 
         bytes32 userOpHash = IEntryPoint(config.entryPoint).getUserOpHash(userOp);
         bytes32 digest = userOpHash.toEthSignedMessageHash();

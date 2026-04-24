@@ -54,4 +54,24 @@ contract SmartWalletTest is Test {
 
         smartWallet.execute(dest, value, functionData);
     }
+
+    function testEntryPointCanExecuteViaHandleOps() public {
+        address dest = address(usdc);
+        uint256 value = 0;
+        bytes memory functionData = abi.encodeWithSelector(ERC20Mock.mint.selector, address(smartWallet), AMOUNT);
+        bytes memory executeData = abi.encodeWithSelector(SmartWallet.execute.selector, dest, value, functionData);
+
+        PackedUserOperation memory packedUserOp =
+            sendPackedUserOp.generateUserOperation(executeData, helperConfig.getConfig(), address(smartWallet));
+
+        vm.deal(address(smartWallet), 1e18);
+
+        PackedUserOperation[] memory ops = new PackedUserOperation[](1);
+        ops[0] = packedUserOp;
+
+        //vm.prank(user);
+        IEntryPoint(helperConfig.getConfig().entryPoint).handleOps(ops, payable(user));
+
+        assertEq(usdc.balanceOf(address(smartWallet)), AMOUNT);
+    }
 }

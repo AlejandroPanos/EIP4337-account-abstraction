@@ -48,4 +48,8 @@ contract HelperConfig is Script {
 
         return activeNetworkConfig;
     }
+
+    function getConfig() external view returns (NetworkConfig memory) {
+        return activeNetworkConfig;
+    }
 }
