@@ -79,4 +79,21 @@ contract SmartWalletTest is Test {
         vm.deal(address(smartWallet), 1 ether);
         assertEq(address(smartWallet).balance, 1 ether);
     }
+
+    function testValidateUserOpReturnsSuccessForValidSignature() public {
+        address dest = address(usdc);
+        uint256 value = 0;
+        bytes memory functionData = abi.encodeWithSelector(ERC20Mock.mint.selector, address(smartWallet), AMOUNT);
+        bytes memory executeData = abi.encodeWithSelector(SmartWallet.execute.selector, dest, value, functionData);
+
+        PackedUserOperation memory packedUserOp =
+            sendPackedUserOp.generateUserOperation(executeData, helperConfig.getConfig(), address(smartWallet));
+
+        bytes32 userOperationHash = IEntryPoint(helperConfig.getConfig().entryPoint).getUserOpHash(packedUserOp);
+        uint256 missingAccountFunds = 1e18;
+
+        vm.prank(helperConfig.getConfig().entryPoint);
+        uint256 validationData = smartWallet.validateUserOp(packedUserOp, userOperationHash, missingAccountFunds);
+        assertEq(validationData, 0);
+    }
 }
