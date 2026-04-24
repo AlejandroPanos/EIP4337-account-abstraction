@@ -19,4 +19,8 @@ contract SmartWalletTest is Test {
     SmartWallet smartWallet;
     ERC20Mock usdc;
     SendPackedUserOp sendPackedUserOp;
+
+    /* State variables */
+    uint256 private constant AMOUNT = 1e18;
+    address user = makeAddr("user");
 }
