@@ -23,4 +23,12 @@ contract SmartWalletTest is Test {
     /* State variables */
     uint256 private constant AMOUNT = 1e18;
     address user = makeAddr("user");
+
+    /* Set up function */
+    function setUp() external {
+        DeploySmartWallet deployer = new DeploySmartWallet();
+        (helperConfig, smartWallet) = deployer.run();
+        usdc = new ERC20Mock();
+        sendPackedUserOp = new SendPackedUserOp();
+    }
 }
