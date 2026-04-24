@@ -30,7 +30,7 @@ contract SendPackedUserOp is Script {
         bytes32 r;
         bytes32 s;
         if (block.chainid == 31337) {
-            (v, r, s) = vm.sign(ANVIL_DEFAULT_KEY, digest);
+            (v, r, s) = vm.sign(ANVIL_KEY, digest);
         } else {
             (v, r, s) = vm.sign(config.account, digest);
         }
