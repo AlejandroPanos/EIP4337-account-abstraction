@@ -8,6 +8,7 @@ import {HelperConfig} from "script/HelperConfig.s.sol";
 import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
 import {SendPackedUserOp, PackedUserOperation, IEntryPoint} from "script/SendPackedUserOp.s.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {SIG_VALIDATION_FAILED, SIG_VALIDATION_SUCCESS} from "lib/account-abstraction/contracts/core/Helpers.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 contract SmartWalletTest is Test {
@@ -104,5 +105,33 @@ contract SmartWalletTest is Test {
         vm.prank(user);
         vm.expectRevert(SmartWallet.SmartWallet__NotFromEntryPoint.selector);
         smartWallet.validateUserOp(emptyOp, emptyHash, 0);
+    }
+
+    function testFuzz_ValidateUserOpWithRandomKey(uint256 privateKey) public {
+        privateKey = bound(privateKey, 1, type(uint96).max);
+        address derivedUser = vm.addr(privateKey);
+
+        address dest = address(usdc);
+        uint256 value = 0;
+        bytes memory functionData = abi.encodeWithSelector(ERC20Mock.mint.selector, address(smartWallet), AMOUNT);
+        bytes memory executeData = abi.encodeWithSelector(SmartWallet.execute.selector, dest, value, functionData);
+
+        PackedUserOperation memory packedUserOp =
+            sendPackedUserOp.generateUserOperation(executeData, helperConfig.getConfig(), address(smartWallet));
+
+        bytes32 userOpHash = IEntryPoint(helperConfig.getConfig().entryPoint).getUserOpHash(packedUserOp);
+
+        bytes32 digest = userOpHash.toEthSignedMessageHash();
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, digest);
+        packedUserOp.signature = abi.encodePacked(r, s, v);
+
+        vm.prank(helperConfig.getConfig().entryPoint);
+        uint256 validationData = smartWallet.validateUserOp(packedUserOp, userOpHash, 0);
+
+        if (derivedUser == smartWallet.owner()) {
+            assertEq(validationData, SIG_VALIDATION_SUCCESS);
+        } else {
+            assertEq(validationData, SIG_VALIDATION_FAILED);
+        }
     }
 }
